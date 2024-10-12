@@ -21,6 +21,7 @@ document.getElementById('timerForm').addEventListener('submit', function(event) 
     let isExercise = true;
     let timeLeft = exerciseTime;
     let timerInterval = null;
+    let transitionTimeout = null; // To keep track of transition delays
 
     // Disable start button and enable cancel button
     startBtn.disabled = true;
@@ -39,6 +40,7 @@ document.getElementById('timerForm').addEventListener('submit', function(event) 
 
     function playSound(sound) {
         if (muteCheckbox.checked) return;
+        stopAllSounds(); // Ensure no other sound is playing
         sound.currentTime = 0;
         sound.play();
     }
@@ -46,6 +48,13 @@ document.getElementById('timerForm').addEventListener('submit', function(event) 
     function stopSound(sound) {
         sound.pause();
         sound.currentTime = 0;
+    }
+
+    function stopAllSounds() {
+        stopSound(soundA);
+        stopSound(soundB);
+        stopSound(soundC);
+        stopSound(soundD);
     }
 
     function startTimer() {
@@ -63,17 +72,13 @@ document.getElementById('timerForm').addEventListener('submit', function(event) 
                 outputTimer.textContent = formatTime(timeLeft);
             } else {
                 clearInterval(timerInterval);
-                // Stop current ticking sound
-                if (isExercise) {
-                    stopSound(soundA);
-                } else {
-                    stopSound(soundC);
-                }
+                stopAllSounds(); // Stop any ticking sounds
 
                 if (isExercise) {
                     // Transition to Rest
                     playSound(soundB); // Play Transition to Rest
-                    setTimeout(() => {
+                    // Assuming soundB is around 1 second
+                    transitionTimeout = setTimeout(() => {
                         isExercise = false;
                         currentRep++;
                         if (currentRep >= reps) {
@@ -82,15 +87,16 @@ document.getElementById('timerForm').addEventListener('submit', function(event) 
                             timeLeft = restTime;
                             startTimer();
                         }
-                    }, 1000); // Adjust delay as per transition sound length
+                    }, 1000); // Adjust this delay based on soundB's actual duration
                 } else {
                     // Transition to Exercise
                     playSound(soundD); // Play Transition to Exercise
-                    setTimeout(() => {
+                    // Assuming soundD is around 1 second
+                    transitionTimeout = setTimeout(() => {
                         isExercise = true;
                         timeLeft = exerciseTime;
                         startTimer();
-                    }, 1000); // Adjust delay as per transition sound length
+                    }, 1000); // Adjust this delay based on soundD's actual duration
                 }
             }
         }, 1000);
@@ -105,11 +111,8 @@ document.getElementById('timerForm').addEventListener('submit', function(event) 
 
     function resetWorkout() {
         clearInterval(timerInterval);
-        // Stop all sounds
-        stopSound(soundA);
-        stopSound(soundB);
-        stopSound(soundC);
-        stopSound(soundD);
+        clearTimeout(transitionTimeout);
+        stopAllSounds();
         outputStatus.textContent = 'Workout canceled.';
         outputTimer.textContent = '--:--';
         resetButtons();
