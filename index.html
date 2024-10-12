@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Timer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🏋️‍♂️ Gym Timer 🕒</h1>
+        <form id="timerForm">
+            <div class="input-group">
+                <label for="exerciseTime">Exercise Time (seconds)</label>
+                <input type="number" id="exerciseTime" min="1" placeholder="e.g., 30" required>
+            </div>
+            <div class="input-group">
+                <label for="restTime">Rest Time (seconds)</label>
+                <input type="number" id="restTime" min="1" placeholder="e.g., 15" required>
+            </div>
+            <div class="input-group">
+                <label for="reps">Number of Reps</label>
+                <input type="number" id="reps" min="1" placeholder="e.g., 10" required>
+            </div>
+            <div class="buttons">
+                <button type="submit" class="start-btn">Start</button>
+                <button type="button" id="cancelBtn" class="cancel-btn" disabled>Cancel</button>
+            </div>
+        </form>
+        <div id="output" class="output">
+            <p id="status">Ready to start your workout!</p>
+            <p id="timer">--:--</p>
+        </div>
+        <!-- Sound Controls -->
+        <div class="sound-controls">
+            <label>
+                <input type="checkbox" id="muteCheckbox">
+                Mute Sounds
+            </label>
+        </div>
+        <!-- Attribution (if required) -->
+        <p class="attribution">Sounds provided by <a href="https://freesound.org/" target="_blank" rel="noopener noreferrer">FreeSound.org</a></p>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="soundA" loop preload="auto">
+        <source src="sounds/soundA.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="soundB" preload="auto">
+        <source src="sounds/soundB.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="soundC" loop preload="auto">
+        <source src="sounds/soundC.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="soundD" preload="auto">
+        <source src="sounds/soundD.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
