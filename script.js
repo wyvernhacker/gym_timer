@@ -1,176 +1,75 @@
-document.getElementById('timerForm').addEventListener('submit', function(event) {
-    event.preventDefault();
+// Select form and timer display elements
+const timerForm = document.getElementById('timerForm');
+const timerDisplay = document.getElementById('timerDisplay');
+const cancelButton = document.getElementById('cancelButton');
 
-    // Retrieve user inputs
-    const exerciseTime = parseInt(document.getElementById('exerciseTime').value);
-    const restTime = parseInt(document.getElementById('restTime').value);
-    const reps = parseInt(document.getElementById('reps').value);
+// Select sound elements
+const soundExercise = new Audio('soundB.mp3');
+const soundRest = new Audio('soundD.mp3');
 
-    // Output elements
-    const outputStatus = document.getElementById('status');
-    const outputTimer = document.getElementById('timer');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const startBtn = document.querySelector('.start-btn');
-    const muteCheckbox = document.getElementById('muteCheckbox');
+let exerciseTime, restTime, reps, intervalId, currentRep;
+let isExercising = true;
 
-    // Audio elements
-    const soundA = document.getElementById('soundA'); // Exercise ticking
-    const soundB = document.getElementById('soundB'); // Transition to rest
-    const soundC = document.getElementById('soundC'); // Rest ticking
-    const soundD = document.getElementById('soundD'); // Transition to exercise
+// Start the timer when the form is submitted
+timerForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    // Get values from the form
+    exerciseTime = parseInt(document.getElementById('exerciseTime').value, 10);
+    restTime = parseInt(document.getElementById('restTime').value, 10);
+    reps = parseInt(document.getElementById('reps').value, 10);
+    currentRep = 1;
 
-    // Variables to track state
-    let currentRep = 0;
-    let isExercise = true; // Start with exercise
-    let timeLeft = exerciseTime;
-    let timerInterval = null;
-    let transitionTimeout = null;
-
-    // Variables to store sound durations (in milliseconds)
-    let durationB = 1000; // Default 1 second
-    let durationD = 1000; // Default 1 second
-
-    // Disable start button and enable cancel button
-    startBtn.disabled = true;
-    cancelBtn.disabled = false;
-
-    // Preload sounds and get their durations
-    window.addEventListener('load', function() {
-        soundB.addEventListener('loadedmetadata', function() {
-            durationB = soundB.duration * 1000; // Convert to ms
-        });
-        soundD.addEventListener('loadedmetadata', function() {
-            durationD = soundD.duration * 1000; // Convert to ms
-        });
-    });
-
-    // Function to update the display
-    function updateDisplay() {
-        outputStatus.textContent = isExercise ? `Rep ${currentRep + 1}: Exercise` : `Rep ${currentRep + 1}: Rest`;
-        outputTimer.textContent = formatTime(timeLeft);
-    }
-
-    // Function to format time in MM:SS
-    function formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
-    }
-
-    // Function to play a specific sound
-    function playSound(sound) {
-        if (muteCheckbox.checked) return;
-        stopAllSounds(); // Ensure no other sound is playing
-        sound.currentTime = 0;
-        const playPromise = sound.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(error => {
-                console.error(`Error playing sound: ${sound.id}`, error);
-            });
-        }
-    }
-
-    // Function to stop a specific sound
-    function stopSound(sound) {
-        sound.pause();
-        sound.currentTime = 0;
-    }
-
-    // Function to stop all sounds
-    function stopAllSounds() {
-        stopSound(soundA);
-        stopSound(soundB);
-        stopSound(soundC);
-        stopSound(soundD);
-    }
-
-    // Function to start the timer
-    function startTimer() {
-        updateDisplay();
-
-        if (isExercise) {
-            playSound(soundA);
-            playSound(soundB);// Play Exercise ticking sound
-        } else {
-            playSound(soundC);
-            playSound(soundD);// Play Rest ticking sound
-        }
-
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            if (timeLeft >= 0) {
-                outputTimer.textContent = formatTime(timeLeft);
-            } else {
-                clearInterval(timerInterval);
-                stopAllSounds(); // Stop any ticking sounds
-
-                if (isExercise) {
-                    // Transition to Rest
-                    playSound(soundB); // Play Transition to Rest
-                    transitionTimeout = setTimeout(() => {
-                        isExercise = false;
-                        currentRep++;
-                        if (currentRep >= reps) {
-                            finishWorkout();
-                        } else {
-                            timeLeft = restTime;
-                            startTimer();
-                        }
-                    }, durationB); // Delay based on soundB duration
-                } else {
-                    if (currentRep >= reps) {
-                        // Last rep finished, end workout
-                        playSound(soundC); // Play final Rest ticking sound
-                        finishWorkout();
-                    } else {
-                        // Transition to Exercise
-                        playSound(soundD); // Play Transition to Exercise
-                        transitionTimeout = setTimeout(() => {
-                            isExercise = true;
-                            timeLeft = exerciseTime;
-                            startTimer();
-                        }, durationD); // Delay based on soundD duration
-                    }
-                }
-            }
-        }, 1000);
-    }
-
-    // Function to finish the workout
-    function finishWorkout() {
-        outputStatus.textContent = '🎉 Workout Complete! 🎉';
-        outputTimer.textContent = '--:--';
-        resetButtons();
-    }
-
-    // Function to reset the workout (called on cancel)
-    function resetWorkout() {
-        clearInterval(timerInterval);
-        clearTimeout(transitionTimeout);
-        stopAllSounds();
-        outputStatus.textContent = 'Workout canceled.';
-        outputTimer.textContent = '--:--';
-        resetButtons();
-    }
-
-    // Function to reset button states
-    function resetButtons() {
-        startBtn.disabled = false;
-        cancelBtn.disabled = true;
-    }
-
-    // Event listener for cancel button
-    cancelBtn.addEventListener('click', resetWorkout);
-
-    // Event listener for mute checkbox
-    muteCheckbox.addEventListener('change', function() {
-        const isMuted = this.checked;
-        soundA.muted = isMuted;
-        soundB.muted = isMuted;
-        soundC.muted = isMuted;
-        soundD.muted = isMuted;
-    });
-
-    // Initialize the timer
-    startTimer();
+    startTimer(exerciseTime);
 });
+
+// Cancel the timer
+cancelButton.addEventListener('click', () => {
+    clearInterval(intervalId);
+    timerDisplay.textContent = 'Timer canceled';
+    soundExercise.pause();
+    soundRest.pause();
+    soundExercise.currentTime = 0;
+    soundRest.currentTime = 0;
+});
+
+// Function to start the timer
+function startTimer(time) {
+    let countdown = time;
+
+    if (isExercising) {
+        soundExercise.play();
+    } else {
+        soundRest.play();
+    }
+
+    intervalId = setInterval(() => {
+        countdown--;
+        timerDisplay.textContent = `${isExercising ? 'Exercise' : 'Rest'}: ${countdown}s`;
+
+        if (countdown <= 0) {
+            clearInterval(intervalId);
+            switchPhase();
+        }
+    }, 1000);
+}
+
+// Function to switch between exercise and rest
+function switchPhase() {
+    if (isExercising) {
+        soundExercise.pause();
+        soundExercise.currentTime = 0;
+        isExercising = false;
+        startTimer(restTime);
+    } else {
+        soundRest.pause();
+        soundRest.currentTime = 0;
+        if (currentRep < reps) {
+            currentRep++;
+            isExercising = true;
+            startTimer(exerciseTime);
+        } else {
+            timerDisplay.textContent = 'Workout Complete!';
+        }
+    }
+}
