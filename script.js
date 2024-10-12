@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const muteCheckbox = document.getElementById('muteCheckbox');
 
     // Initialize Audio Objects
-    const soundB = new Audio('sounds/soundB.mp3'); // Exercise sound
-    const soundD = new Audio('sounds/soundD.mp3'); // Rest sound
+    const soundB = new Audio('soundB.mp3'); // Exercise sound
+    const soundD = new Audio('soundD.mp3'); // Rest sound
 
     // Set audio to loop if necessary (optional based on sound design)
     // soundB.loop = true;
