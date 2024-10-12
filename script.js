@@ -89,9 +89,11 @@ document.getElementById('timerForm').addEventListener('submit', function(event) 
         updateDisplay();
 
         if (isExercise) {
-            playSound(soundA); // Play Exercise ticking sound
+            playSound(soundA);
+            playSound(soundB);// Play Exercise ticking sound
         } else {
-            playSound(soundC); // Play Rest ticking sound
+            playSound(soundC);
+            playSound(soundD);// Play Rest ticking sound
         }
 
         timerInterval = setInterval(() => {
