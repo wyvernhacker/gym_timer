@@ -69,6 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
             playSound(soundD);
         }
 
+
+
         // Start the countdown
         timerInterval = setInterval(() => {
             timeLeft--;
@@ -88,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Workout Complete
                         statusDisplay.textContent = '🎉 Workout Complete! 🎉';
                         timerDisplay.textContent = '--:--';
-                        playSound(soundD); // Optionally play a final sound
+                        playSound(soundC); // Optionally play a final sound
                         resetControls();
                     } else {
                         // Start Rest Phase after a short delay to allow sound to play
