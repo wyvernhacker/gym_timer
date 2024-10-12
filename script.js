@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const soundD = new Audio('soundD.mp3'); // Rest sound
 
     // Set audio to loop if necessary (optional based on sound design)
-    // soundB.loop = true;
-    // soundD.loop = true;
+     soundB.loop = true;
+     soundD.loop = true;
 
     // Variables to manage timer and reps
     let exerciseTime = 0;
